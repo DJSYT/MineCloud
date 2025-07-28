@@ -179,6 +179,55 @@
       position: relative;
     }
 
+    .code-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 0.875rem;
+      transition: color 0.3s ease;
+      pointer-events: none;
+    }
+
+    .form-group input:focus + .code-icon {
+      color: #8b5cf6;
+    }
+
+    .code-message {
+      margin-top: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 20px;
+    }
+
+    .code-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .code-message.valid {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+
+    .code-message.invalid {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .code-message.empty {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
     .form-group input,
     .form-group textarea {
       width: 100%;
@@ -439,6 +488,17 @@
       </div>
       
       <div class="form-group">
+        <label for="discountCode">Discount Code (Optional)</label>
+        <div class="input-wrapper">
+          <input type="text" id="discountCode" placeholder="Enter your discount code here" />
+          <div class="code-icon">
+            <i class="fas fa-tag"></i>
+          </div>
+        </div>
+        <div id="codeMessage" class="code-message"></div>
+      </div>
+      
+      <div class="form-group">
         <button type="submit" class="submit-btn">
           Submit Request
         </button>
@@ -465,10 +525,49 @@
       }
     });
 
+    // Discount codes configuration
+    const discountCodes = {
+      "Mr_RahulGamer": {
+        discount: "10% discount on every service",
+        type: "percentage"
+      },
+      "DJS": {
+        discount: "Free simple customize web page",
+        type: "free_service"
+      }
+    };
+
     // Enhanced form handling with better UX
     const form = document.getElementById("webhookForm");
     const submitBtn = form.querySelector(".submit-btn");
     const messageContainer = document.getElementById("messageContainer");
+    const discountCodeInput = document.getElementById("discountCode");
+    const codeMessage = document.getElementById("codeMessage");
+
+    // Discount code validation function
+    function validateDiscountCode(code) {
+      const trimmedCode = code.trim();
+      if (!trimmedCode) {
+        codeMessage.className = 'code-message empty';
+        codeMessage.textContent = '';
+        return null;
+      }
+      
+      if (discountCodes[trimmedCode]) {
+        codeMessage.className = 'code-message valid show';
+        codeMessage.innerHTML = `🎉 Code Applied! ${discountCodes[trimmedCode].discount}`;
+        return discountCodes[trimmedCode];
+      } else {
+        codeMessage.className = 'code-message invalid show';
+        codeMessage.textContent = '❌ Invalid discount code';
+        return false;
+      }
+    }
+
+    // Add discount code input listener
+    discountCodeInput.addEventListener('input', function() {
+      validateDiscountCode(this.value);
+    });
 
     // Show message function
     function showMessage(text, type) {
@@ -498,6 +597,7 @@
       const email = document.getElementById("email").value.trim();
       const service = document.getElementById("service").value.trim();
       const description = document.getElementById("description").value.trim();
+      const discountCode = document.getElementById("discountCode").value.trim();
 
       // Basic validation
       if (!name || !email || !service || !description) {
@@ -522,13 +622,27 @@
         return text.split('\n').map(line => `> ${line}`).join('\n');
       };
 
-      const content = `# 🎯 New Service Request\n\n` +
-                      `> **👤 Name:**\n> \`\`\`${name}\`\`\`\n\n` +
-                      `> **📧 Email:**\n> \`\`\`${email}\`\`\`\n\n` +
-                      `> **🔧 Service:**\n> \`\`\`${service}\`\`\`\n\n` +
-                      `> **📝 Description:**\n` +
-                      `> \`\`\`\n${formatMultiline(description)}\n> \`\`\`\n\n` +
-                      `> *Submitted at: ${new Date().toLocaleString()}*`;
+      // Check if discount code is valid
+      const codeInfo = discountCode ? validateDiscountCode(discountCode) : null;
+      
+      let content = `# 🎯 New Service Request\n\n` +
+                    `> **👤 Name:**\n> \`\`\`${name}\`\`\`\n\n` +
+                    `> **📧 Email:**\n> \`\`\`${email}\`\`\`\n\n` +
+                    `> **🔧 Service:**\n> \`\`\`${service}\`\`\`\n\n` +
+                    `> **📝 Description:**\n` +
+                    `> \`\`\`\n${formatMultiline(description)}\n> \`\`\`\n\n`;
+      
+      // Add discount code information if provided
+      if (discountCode) {
+        if (codeInfo && codeInfo !== false) {
+          content += `> **💰 Discount Code:** \`${discountCode}\` ✅\n` +
+                     `> **🎁 Benefit:** ${codeInfo.discount}\n\n`;
+        } else {
+          content += `> **💰 Discount Code:** \`${discountCode}\` ❌ (Invalid)\n\n`;
+        }
+      }
+      
+      content += `> *Submitted at: ${new Date().toLocaleString()}*`;
 
       try {
         const response = await fetch("https://discord.com/api/webhooks/1398594915096723537/JWnASMCPUwI6Eu5xcGihIMTYxAMbiWV3eFAe_anbSCinobSmKybUlmmMQHpkStLU5H8U", {
@@ -599,5 +713,5 @@
     });
   </script>
 </body>
-  </html>
-  
+          </html>
+            
