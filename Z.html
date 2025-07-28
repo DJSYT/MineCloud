@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Service Request Form</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -36,6 +37,77 @@
                   radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
       pointer-events: none;
       z-index: 1;
+    }
+
+    /* Back Button Styles */
+    .back-button {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      z-index: 10;
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      color: #f8fafc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .back-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .back-button:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 
+        0 15px 35px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(139, 92, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: rgba(30, 41, 59, 1);
+      border-color: rgba(139, 92, 246, 0.4);
+    }
+
+    .back-button:hover::before {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+    }
+
+    .back-button:active {
+      transform: translateY(0) scale(1.02);
+    }
+
+    .back-button:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 3px;
+    }
+
+    .back-button i {
+      transition: transform 0.3s ease;
+    }
+
+    .back-button:hover i {
+      transform: translateX(-2px);
     }
 
     .form-container {
@@ -250,6 +322,17 @@
       }
     }
 
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-60px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
     @keyframes spin {
       to {
         transform: rotate(360deg);
@@ -279,6 +362,24 @@
       .form-header h2 {
         font-size: 1.5rem;
       }
+
+      .back-button {
+        top: 20px;
+        left: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .back-button {
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
     }
 
     /* Focus visible for accessibility */
@@ -295,6 +396,11 @@
   </style>
 </head>
 <body>
+  <!-- Back Button -->
+  <button class="back-button" onclick="navigateBack()" aria-label="Go back to homepage">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+
   <div class="form-container">
     <div class="form-header">
       <h2>Request a Service</h2>
@@ -341,6 +447,24 @@
   </div>
 
   <script>
+    // Back button navigation function
+    function navigateBack() {
+      // Check if we can go back in history, otherwise go to index.html
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Keyboard navigation support for back button
+    document.addEventListener('keydown', function(e) {
+      // Alt + Left Arrow or Escape key to go back
+      if ((e.altKey && e.key === 'ArrowLeft') || e.key === 'Escape') {
+        navigateBack();
+      }
+    });
+
     // Enhanced form handling with better UX
     const form = document.getElementById("webhookForm");
     const submitBtn = form.querySelector(".submit-btn");
@@ -461,20 +585,19 @@
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      const rotateX = (y - centerY) / centerY * 2;
-      const rotateY = (centerX - x) / centerX * 2;
-      
-      container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+        const xPercent = (x / rect.width - 0.5) * 2;
+        const yPercent = (y / rect.height - 0.5) * 2;
+        
+        container.style.transform = `perspective(1000px) rotateY(${xPercent * 2}deg) rotateX(${-yPercent * 2}deg)`;
+      }
     });
 
     document.addEventListener('mouseleave', () => {
       const container = document.querySelector('.form-container');
-      container.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      container.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
     });
   </script>
 </body>
-            </html>
+  </html>
   
