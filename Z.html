@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Request Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #1e3a8a 75%, #3b82f6 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background decoration */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Back Button Styles */
+    .back-button {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      z-index: 10;
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      color: #f8fafc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .back-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .back-button:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 
+        0 15px 35px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(139, 92, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: rgba(30, 41, 59, 1);
+      border-color: rgba(139, 92, 246, 0.4);
+    }
+
+    .back-button:hover::before {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+    }
+
+    .back-button:active {
+      transform: translateY(0) scale(1.02);
+    }
+
+    .back-button:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 3px;
+    }
+
+    .back-button i {
+      transition: transform 0.3s ease;
+    }
+
+    .back-button:hover i {
+      transform: translateX(-2px);
+    }
+
+    .form-container {
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      z-index: 2;
+      animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border-radius: 24px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+      color: #f8fafc;
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-header p {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #e2e8f0;
+      letter-spacing: 0.025em;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .code-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 0.875rem;
+      transition: color 0.3s ease;
+      pointer-events: none;
+    }
+
+    .form-group input:focus + .code-icon {
+      color: #8b5cf6;
+    }
+
+    .code-message {
+      margin-top: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 20px;
+    }
+
+    .code-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .code-message.valid {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+
+    .code-message.invalid {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .code-message.empty {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid rgba(71, 85, 105, 0.4);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      color: #f8fafc;
+      font-size: 0.875rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 
+        0 0 0 3px rgba(139, 92, 246, 0.1),
+        0 4px 12px rgba(139, 92, 246, 0.15);
+      background: rgba(15, 23, 42, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #64748b;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+      max-height: 200px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.025em;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading state */
+    .submit-btn.loading {
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+
+    .submit-btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      margin: auto;
+      border: 2px solid transparent;
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Success/Error messages */
+    .message {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .message.success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(60px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-60px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .form-container {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+      }
+      
+      .form-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .back-button {
+        top: 20px;
+        left: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .back-button {
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Focus visible for accessibility */
+    .submit-btn:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 2px;
+    }
+
+    .form-group input:focus-visible,
+    .form-group textarea:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Back Button -->
+  <button class="back-button" onclick="navigateBack()" aria-label="Go back to homepage">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+
+  <div class="form-container">
+    <div class="form-header">
+      <h2>Request a Service</h2>
+      <p>Tell us about your project needs</p>
+    </div>
+    
+    <div id="messageContainer"></div>
+    
+    <form id="webhookForm">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <div class="input-wrapper">
+          <input type="text" id="name" placeholder="Enter your full name" required />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <input type="email" id="email" placeholder="your.email@example.com" required />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="service">Service Type</label>
+        <div class="input-wrapper">
+          <input type="text" id="service" placeholder="e.g., Plugin Development, Website Design" required />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Project Description</label>
+        <div class="input-wrapper">
+          <textarea id="description" placeholder="Describe your project requirements in detail..." required></textarea>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="discountCode">Discount Code (Optional)</label>
+        <div class="input-wrapper">
+          <input type="text" id="discountCode" placeholder="Enter your discount code here" />
+          <div class="code-icon">
+            <i class="fas fa-tag"></i>
+          </div>
+        </div>
+        <div id="codeMessage" class="code-message"></div>
+      </div>
+      
+      <button type="submit" class="submit-btn">
+        Submit Request
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Navigation function for back button
+    function navigateBack() {
+      // Check if there's history to go back to
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        // Fallback to a default homepage URL if no history
+        window.location.href = '/';
+      }
+    }
+
+    // Valid discount codes configuration
+    const VALID_CODES = {
+      'SAVE20': {
+        type: 'discount',
+        message: '✅ Valid code! 20% discount applied.'
+      },
+      'NEWCLIENT': {
+        type: 'discount',
+        message: '✅ Valid code! New client discount applied.'
+      },
+      'PUMPKINDABUILDER': {
+        type: 'discord',
+        message: '✅ Valid code! Discord server access granted.'
+      },
+      'MR_RAHULGAMER': {
+        type: 'discount',
+        message: '✅ Valid code! 10% discount applied.'
+      },
+      'DJS': {
+        type: 'free_website',
+        message: '✅ Valid code! Free website service granted.'
+      }
+    };
+
+    // DOM elements
+    const discountCodeInput = document.getElementById('discountCode');
+    const codeMessage = document.getElementById('codeMessage');
+    const form = document.getElementById('webhookForm');
+    const submitBtn = document.querySelector('.submit-btn');
+    const messageContainer = document.getElementById('messageContainer');
+
+    // Discount code validation
+    function validateDiscountCode(code) {
+      if (!code || code.trim() === '') {
+        return { isValid: false, message: '', isEmpty: true };
+      }
+
+      const upperCode = code.trim().toUpperCase();
+      if (VALID_CODES[upperCode]) {
+        return { 
+          isValid: true, 
+          message: VALID_CODES[upperCode].message,
+          type: VALID_CODES[upperCode].type,
+          isEmpty: false 
+        };
+      } else {
+        return { 
+          isValid: false, 
+          message: '❌ Invalid discount code. Please check and try again.',
+          isEmpty: false 
+        };
+      }
+    }
+
+    // Show code validation message
+    function showCodeMessage(validation) {
+      codeMessage.className = 'code-message';
+      
+      if (validation.isEmpty) {
+        codeMessage.classList.add('empty');
+        codeMessage.textContent = '';
+        return;
+      }
+
+      codeMessage.textContent = validation.message;
+      codeMessage.classList.add('show');
+      
+      if (validation.isValid) {
+        codeMessage.classList.add('valid');
+      } else {
+        codeMessage.classList.add('invalid');
+      }
+    }
+
+    // Discount code input event listener
+    discountCodeInput.addEventListener('input', function(e) {
+      const validation = validateDiscountCode(e.target.value);
+      showCodeMessage(validation);
+    });
+
+    // Show general message (success/error)
+    function showMessage(message, type) {
+      messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+      const messageElement = messageContainer.querySelector('.message');
+      setTimeout(() => messageElement.classList.add('show'), 100);
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        if (messageElement) {
+          messageElement.classList.remove('show');
+          setTimeout(() => {
+            messageContainer.innerHTML = '';
+          }, 300);
+        }
+      }, 5000);
+    }
+
+    // Loading state management
+    function setLoadingState(isLoading) {
+      if (isLoading) {
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+      } else {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Request';
+      }
+    }
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Clear previous messages
+      messageContainer.innerHTML = '';
+      
+      // Get form data
+      const formData = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        service: document.getElementById('service').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        discountCode: document.getElementById('discountCode').value.trim(),
+        timestamp: new Date().toISOString()
+      };
+
+      // Basic validation
+      if (!formData.name || !formData.email || !formData.service || !formData.description) {
+        showMessage('Please fill in all required fields.', 'error');
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        showMessage('Please enter a valid email address.', 'error');
+        return;
+      }
+
+      // Validate discount code if provided
+      if (formData.discountCode) {
+        const validation = validateDiscountCode(formData.discountCode);
+        if (!validation.isValid) {
+          showMessage('Please enter a valid discount code or leave it empty.', 'error');
+          return;
+        }
+        // Add validation info to form data
+        formData.codeValidation = validation;
+      }
+
+      setLoadingState(true);
+
+      try {
+        // Get webhook URL from environment or use default
+        const webhookUrl = process.env.WEBHOOK_URL || 'https://hooks.zapier.com/hooks/catch/default/webhook';
+        
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          showMessage('Thank you! Your service request has been submitted successfully. We will contact you soon.', 'success');
+          form.reset();
+          // Clear code message
+          codeMessage.className = 'code-message';
+          codeMessage.textContent = '';
+        } else {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        showMessage('Sorry, there was an error submitting your request. Please try again or contact us directly.', 'error');
+      } finally {
+        setLoadingState(false);
+      }
+    });
+
+    // Add smooth focus transitions
+    const inputs = document.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentNode.classList.add('focused');
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentNode.classList.remove('focused');
+      });
+    });
+
+    // Add keyboard navigation support
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        // Clear focus from any input
+        document.activeElement.blur();
+      }
+    });
+
+    // Prevent form submission on Enter key in text inputs (except textarea)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        e.preventDefault();
+        // Move to next input or submit if last
+        const inputs = Array.from(document.querySelectorAll('input, textarea'));
+        const currentIndex = inputs.indexOf(e.target);
+        if (currentIndex < inputs.length - 1) {
+          inputs[currentIndex + 1].focus();
+        } else {
+          form.dispatchEvent(new Event('submit'));
+        }
+      }
+    });
+  </script>
+</body>
+</html>
